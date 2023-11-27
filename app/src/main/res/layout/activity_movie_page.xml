@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_marginTop="-20dp"
+        app:cardCornerRadius="15dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/nguoinhenvutrumoi"
+            android:alpha="0.9" />
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:background="#80000000"
+            android:alpha="0.6" />
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="-15dp"
+            android:layout_marginTop="60dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/baseline_keyboard_backspace_24"
+
+            >
+        </Button>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="90dp"
+        android:layout_marginRight="15dp"
+        android:background="#FFFFFFFF"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:text="Golden Gate"
+        android:textColor="#ffffffff"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/movieTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:text="Movie title"
+                android:textSize="25sp"
+                android:textStyle="bold">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/movieRatingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="135dp"
+                android:drawableLeft="@drawable/baseline_star_border_24"
+                android:text="Rating : 8.5"
+                android:textSize="20sp"
+                android:textStyle="italic"></TextView>
+
+            <View
+                style="@style/Divider"
+                android:layout_margin="30dp">
+            </View>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="Sypnosis"
+                android:textSize="20sp"
+                android:textStyle="bold">
+
+            </TextView>
+            <TextView
+                android:id="@+id/movieSypnosisTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="Sypnosis"
+                android:textSize="15sp">
+
+            </TextView>
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</merge>
