@@ -1,32 +1,33 @@
 package com.example.midtermproject;
 
-import java.io.Serializable;
+public class Movie implements java.io.Serializable{
+    public String title;
+    public String poster;
+    public String rating;
+    public String sypnosis;
 
-public class Movie {
-    private String title;
-    private String posterPath;
-    private String rating;
-    private String overview;
+    public Movie() {
+    }
 
     public Movie(String title, String posterPath, String rating, String overview) {
         this.title = title;
-        this.posterPath = posterPath;
+        this.poster = posterPath;
         this.rating = "Rating: " + rating ;
-        this.overview = overview;
+        this.sypnosis = overview;
     }
 
     // Các phương thức getter
     public String getTitle() {
         return title;
     }
-    public String getPosterPath() {
-        return posterPath;
+    public String getPoster() {
+        return poster;
     }
     public String getRating() {
         return rating;
     }
-    public String getOverview() {
-        return overview;
+    public String getSypnosis() {
+        return sypnosis;
     }
 
     // Các phương thức setter
@@ -34,12 +35,21 @@ public class Movie {
         this.title = title;
     }
     public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
+        this.poster = posterPath;
     }
     public void setRating(String rating) {
-        this.rating = "Rating: " + rating;
+        this.rating = rating;
     }
     public void setOverview(String overview) {
-        this.overview = overview;
+        this.sypnosis = overview;
     }
+//    public void setPoster(String poster) {
+//        this.poster = poster;
+//    }
+//    public void setRating(String rating) {
+//        this.rating = "Rating: " + rating;
+//    }
+//    public void setSypnosis(String sypnosis) {
+//        this.sypnosis = sypnosis;
+//    }
 }

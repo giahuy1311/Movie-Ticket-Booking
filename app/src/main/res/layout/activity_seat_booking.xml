@@ -70,66 +70,66 @@
 
             </TextView>
 
-            <TextView
-                android:id="@+id/movieRatingTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="135dp"
-                android:drawableLeft="@drawable/baseline_star_border_24"
-                android:text="Rating : 8.5"
-                android:textSize="20sp"
-                android:textStyle="italic"></TextView>
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-            <View
-                style="@style/Divider"
-                android:layout_margin="30dp">
-            </View>
+                <TextView
+                    android:id="@+id/dayTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="Friday,12"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_marginRight="20dp"
+                    android:textSize="15sp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    >
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/timeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="09:30A AM"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="15sp">
+
+                </TextView>
 
 
+            </LinearLayout>
             <TextView
+                android:id="@+id/theaterTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
+                android:text="CGV GigaMall"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:text="Sypnosis"
-                android:textSize="20sp"
-                android:textStyle="bold">
-
-            </TextView>
-            <TextView
-                android:id="@+id/movieSypnosisTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp"
-                android:text="Sypnosis"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
                 android:textSize="15sp">
 
             </TextView>
-
             <View
                 style="@style/Divider"
                 android:layout_margin="30dp">
             </View>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
 
-            </androidx.recyclerview.widget.RecyclerView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_theater"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"></androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
 

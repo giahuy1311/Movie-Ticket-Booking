@@ -1,6 +1,10 @@
 package com.example.midtermproject.adapter;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +14,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.midtermproject.Movie;
 import com.example.midtermproject.MoviePage;
 import com.example.midtermproject.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
+// glide
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -46,7 +58,8 @@ public class AllMovieAdapter extends RecyclerView.Adapter<AllMovieAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull AllMovieAdapter.ViewHolder holder, int position) {
         Movie movie = movieList.get(position);
-        Picasso.get().load(movie.getPosterPath()).into(holder.imageView);
+
+        Picasso.get().load(movie.getPoster()).into(holder.imageView);
         holder.titleTextView.setText(movie.getTitle());
         holder.ratingTextView.setText(movie.getRating().toString());
 
@@ -61,12 +74,13 @@ public class AllMovieAdapter extends RecyclerView.Adapter<AllMovieAdapter.ViewHo
                 Intent intent = new Intent(view.getContext(), MoviePage.class);
                 // Pass any data to the new activity if needed
                 intent.putExtra("movieTitle", clickedItem.getTitle());
-                intent.putExtra("movieDescription", clickedItem.getOverview());
-                intent.putExtra("movieImage", clickedItem.getPosterPath());
+                intent.putExtra("movieDescription", clickedItem.getSypnosis());
+                intent.putExtra("movieImage", clickedItem.getPoster());
                 intent.putExtra("movieRating", clickedItem.getRating());
                 view.getContext().startActivity(intent);
             }
         });
+
     }
 
     @Override

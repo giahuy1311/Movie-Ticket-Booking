@@ -1,6 +1,9 @@
 package com.example.midtermproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,17 +11,36 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.midtermproject.adapter.DateAdapter;
+import com.example.midtermproject.adapter.TheaterAdapter;
+import com.example.midtermproject.adapter.TimeAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-public class MoviePage extends AppCompatActivity {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTimeClickListener{
     private TextView movieNameText;
     private ImageView movieImageView;
     private TextView movieDescriptionText;
     private TextView movieRatingText;
-
-
+    private RecyclerView dateRecyclerView;
+    private RecyclerView theaterRecyclerView;
+    private RecyclerView timeRecyclerView;
+    private List<Showtime> showtimeList;
+    List<Showtime> showtimeOnSelectedDate;
+    private Movie movie;
+    private FloatingActionButton fabButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,17 +51,17 @@ public class MoviePage extends AppCompatActivity {
         movieRatingText = findViewById(R.id.movieRatingTextView);
 
         Intent intent = getIntent();
+        movie = new Movie();
         if (intent != null) {
-            String movieName = intent.getStringExtra("movieTitle");
-            String movieImage = intent.getStringExtra("movieImage");
-            String movieDescription = intent.getStringExtra("movieDescription");
-            String movieRating = intent.getStringExtra("movieRating");
+             movie.setTitle(intent.getStringExtra("movieTitle"));
+             movie.setPosterPath(intent.getStringExtra("movieImage"));
+             movie.setOverview(intent.getStringExtra("movieDescription"));
+             movie.setRating(intent.getStringExtra("movieRating"));
 
-            Log.d("MoviePage", "onCreate: " + movieName);
-            Picasso.get().load(movieImage).into(movieImageView);
-            movieNameText.setText(movieName);
-            movieDescriptionText.setText(movieDescription);
-            movieRatingText.setText(movieRating);
+            Picasso.get().load(movie.getPoster()).into(movieImageView);
+            movieNameText.setText(movie.getTitle());
+            movieDescriptionText.setText(movie.getSypnosis());
+            movieRatingText.setText("Rating: "+movie.getRating());
         }
 
         // back to previous page
@@ -51,5 +73,106 @@ public class MoviePage extends AppCompatActivity {
             }
         });
 
+        fabButton = (FloatingActionButton) findViewById(R.id.fabButton);
+
+        loadShowtimeData();
+
     }
+
+    private void loadShowtimeData() {
+        showtimeList = new ArrayList<>();
+        String movieName = movie.getTitle();
+        DatabaseReference showtimesRef = FirebaseDatabase.getInstance().getReference("showtime");
+        showtimesRef.child(movieName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // Iterate through showtimes and display them
+                for (DataSnapshot showtimeSnapshot : dataSnapshot.getChildren()) {
+                    Showtime showtime = showtimeSnapshot.getValue(Showtime.class);
+                    // Display or process the showtime information
+                    showtimeList.add(showtime);
+                    Log.d("Showtime", "onDataChange: " + showtime.getTheaterName());
+                    setupDateAdapter();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("Showtime", "onCancelled: " + databaseError.getMessage());
+                // Handle error
+            }
+        });
+    }
+
+    private void setupDateAdapter() {
+        List<String> dateList = new ArrayList<>();
+        List<String> dayOfWeekList = new ArrayList<>();
+        // Collect all dates from showtime into dateList
+        for (Showtime showtime : showtimeList) {
+            String date = showtime.getDate();
+            String dayOfWeek = showtime.getDayOfWeek();
+            if (!dateList.contains(date)) {
+                dateList.add(date);
+                dayOfWeekList.add(dayOfWeek);
+            }
+        }
+
+        // Create and set the DateAdapter
+        dateRecyclerView = findViewById(R.id.recyclerView_date);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        dateRecyclerView.setLayoutManager(layoutManager);
+        DateAdapter dateAdapter = new DateAdapter(dayOfWeekList,dateList);
+        dateRecyclerView.setAdapter(dateAdapter);
+        dateAdapter.setOnDateClickListener(new DateAdapter.OnDateClickListener() {
+            @Override
+            public void onDateClick(String selectedDate) {
+                Log.d("MoviePage", "onDateClick: " + selectedDate);
+                setupTheaterAdapter(selectedDate);
+            }
+        });
+    }
+
+    private void setupTheaterAdapter(String selectedDate) {
+        showtimeOnSelectedDate = new ArrayList<>();
+        // Collect all theaters from showtime into theaterList
+        for (Showtime showtime : showtimeList) {
+            String date = showtime.getDate();
+            if (date.equals(selectedDate)) {
+                showtimeOnSelectedDate.add(showtime);
+
+            }
+
+        }
+        Log.d("MoviePage", "setupTheaterAdapter: " + showtimeOnSelectedDate.size());
+        theaterRecyclerView = findViewById(R.id.recyclerView_theater);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        theaterRecyclerView.setLayoutManager(layoutManager);
+
+        TheaterAdapter theaterAdapter = new TheaterAdapter(showtimeOnSelectedDate);
+        theaterAdapter.setOnTimeClickListener(this);
+        theaterRecyclerView.setAdapter(theaterAdapter);
+        theaterAdapter.notifyDataSetChanged();
+
+    }
+    @Override
+    public void onTimeClick(TimeSlot timeSlot, int showListIndex) {
+        // Handle the time slot click event here
+        Log.d("MoviePage", "onTimeClick: " + timeSlot.getTime());
+        Showtime showtimeSelected = showtimeOnSelectedDate.get(showListIndex);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), SeatBookingActivity.class);
+                intent.putExtra("theaterName", showtimeSelected.getTheaterName());
+                intent.putExtra("movie", (Serializable) movie);
+                intent.putExtra("showtime", (Serializable) showtimeSelected);
+                intent.putExtra("time", timeSlot.getTime());
+                startActivity(intent);
+            }
+        });
+
+    }
+
 }

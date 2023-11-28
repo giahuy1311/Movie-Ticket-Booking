@@ -33,7 +33,7 @@ public class HighlightMovieAdapter extends RecyclerView.Adapter<HighlightMovieAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Movie movie = movieList.get(position);
-        Picasso.get().load(movie.getPosterPath()).into(holder.imageView);
+        Picasso.get().load(movie.getPoster()).into(holder.imageView);
         // Hiển thị thông tin bộ phim trong ViewHolder
         // Ví dụ: holder.titleTextView.setText(movie.getTitle());
 

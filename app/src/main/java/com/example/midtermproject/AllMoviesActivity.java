@@ -11,6 +11,10 @@ import android.util.Log;
 
 import com.example.midtermproject.adapter.AllMovieAdapter;
 import com.example.midtermproject.adapter.HighlightMovieAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +48,7 @@ public class AllMoviesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         movieList = new ArrayList<>();
-        AllMovieAdapter allMovieAdapter = new AllMovieAdapter(movieList,1);
+        AllMovieAdapter allMovieAdapter = new AllMovieAdapter(movieList, 1);
         recyclerView.setAdapter(allMovieAdapter);
 
 
@@ -54,6 +58,7 @@ public class AllMoviesActivity extends AppCompatActivity {
                 searchMovie(query);
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String query) {
                 searchMovie(query);
@@ -62,7 +67,8 @@ public class AllMoviesActivity extends AppCompatActivity {
         });
         loadMovieData();
     }
-    private void searchMovie(String query){
+
+    private void searchMovie(String query) {
         List<Movie> filteredList = new ArrayList<>();
 
         if (query.isEmpty()) {
@@ -86,101 +92,122 @@ public class AllMoviesActivity extends AppCompatActivity {
             allMovieAdapter.setMovieList(filteredList);
         }
     }
+
     private void loadMovieData() {
-        String api_key = "c3e95bd49ed09d54a823c7da583a0bc4";
-        String api_url = "https://api.themoviedb.org/3/movie/now_playing?api_key=" + api_key;
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("movie");
+        databaseReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                movieList.clear();
 
-        new FetchMovieDataTask().execute(api_url);
-    }
+                for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                    Movie movie = dataSnapshot.getValue(Movie.class);
 
-    private class FetchMovieDataTask extends AsyncTask<String, Void, String> {
+                    Log.d("FetchMovieDataTask", "Movie poster: " + movie.getPoster());
+                    // get image from firebase storage
 
-        @Override
-        protected String doInBackground(String... params) {
-            // Thực hiện việc tải dữ liệu từ API trong background thread
-            String apiUrl = params[0];
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String movieDataJson = null;
-
-            try {
-                URL url = new URL(apiUrl);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
-
-                if (inputStream == null) {
-                    return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
-                }
-
-                if (buffer.length() == 0) {
-                    return null;
-                }
-
-                movieDataJson = buffer.toString();
-            } catch (IOException e) {
-                Log.e("FetchMovieDataTask", "Error ", e);
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("FetchMovieDataTask", "Error closing stream", e);
+                    if (movie != null) {
+                        movieList.add(movie);
                     }
                 }
-            }
 
-            return movieDataJson;
-        }
-
-        @Override
-        protected void onPostExecute(String movieDataJson) {
-            // Xử lý dữ liệu JSON ở đây sau khi AsyncTask hoàn thành
-            if (movieDataJson != null) {
-                parseMovieData(movieDataJson);
-            } else {
-                Log.e("FetchMovieDataTask", "Error: Unable to fetch movie data");
-            }
-        }
-
-        private void parseMovieData(String movieDataJson) {
-            try {
-                JSONObject jsonObject = new JSONObject(movieDataJson);
-                JSONArray resultsArray = jsonObject.getJSONArray("results");
-
-                for (int i = 0; i < resultsArray.length(); i++) {
-                    JSONObject movieObject = resultsArray.getJSONObject(i);
-                    String title = movieObject.getString("original_title");
-                    String rating = movieObject.getString("vote_average");
-                    Log.d("FetchMovieDataTask", "Rating: " + rating);
-                    String posterPath = movieObject.getString("poster_path");
-                    String overView = movieObject.getString("overview");
-                    String completePosterPath = "https://image.tmdb.org/t/p/w500" + posterPath;
-                    Movie movie = new Movie(title, completePosterPath,rating,overView);
-                    movieList.add(movie);
+                Collections.shuffle(movieList);
+                AllMovieAdapter allMovieAdapter = (AllMovieAdapter) recyclerView.getAdapter();
+                if (allMovieAdapter != null) {
+                    allMovieAdapter.setMovieList(movieList);
                 }
-
-                // Sau khi đã thêm dữ liệu vào danh sách, cập nhật RecyclerView
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-            } catch (JSONException e) {
-                Log.e("FetchMovieDataTask", "Error parsing JSON", e);
             }
-        }
-
-
+        });
     }
 }
+
+//    private class FetchMovieDataTask extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            // Thực hiện việc tải dữ liệu từ API trong background thread
+//            String apiUrl = params[0];
+//            HttpURLConnection urlConnection = null;
+//            BufferedReader reader = null;
+//            String movieDataJson = null;
+//
+//            try {
+//                URL url = new URL(apiUrl);
+//                urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setRequestMethod("GET");
+//
+//                InputStream inputStream = urlConnection.getInputStream();
+//                StringBuilder buffer = new StringBuilder();
+//
+//                if (inputStream == null) {
+//                    return null;
+//                }
+//
+//                reader = new BufferedReader(new InputStreamReader(inputStream));
+//                String line;
+//
+//                while ((line = reader.readLine()) != null) {
+//                    buffer.append(line).append("\n");
+//                }
+//
+//                if (buffer.length() == 0) {
+//                    return null;
+//                }
+//
+//                movieDataJson = buffer.toString();
+//            } catch (IOException e) {
+//                Log.e("FetchMovieDataTask", "Error ", e);
+//                return null;
+//            } finally {
+//                if (urlConnection != null) {
+//                    urlConnection.disconnect();
+//                }
+//                if (reader != null) {
+//                    try {
+//                        reader.close();
+//                    } catch (final IOException e) {
+//                        Log.e("FetchMovieDataTask", "Error closing stream", e);
+//                    }
+//                }
+//            }
+//
+//            return movieDataJson;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String movieDataJson) {
+//            // Xử lý dữ liệu JSON ở đây sau khi AsyncTask hoàn thành
+//            if (movieDataJson != null) {
+//                parseMovieData(movieDataJson);
+//            } else {
+//                Log.e("FetchMovieDataTask", "Error: Unable to fetch movie data");
+//            }
+//        }
+//
+//        private void parseMovieData(String movieDataJson) {
+//            try {
+//                JSONObject jsonObject = new JSONObject(movieDataJson);
+//                JSONArray resultsArray = jsonObject.getJSONArray("results");
+//
+//                for (int i = 0; i < resultsArray.length(); i++) {
+//                    JSONObject movieObject = resultsArray.getJSONObject(i);
+//                    String title = movieObject.getString("original_title");
+//                    String rating = movieObject.getString("vote_average");
+//                    Log.d("FetchMovieDataTask", "Rating: " + rating);
+//                    String posterPath = movieObject.getString("poster_path");
+//                    String overView = movieObject.getString("overview");
+//                    String completePosterPath = "https://image.tmdb.org/t/p/w500" + posterPath;
+//                    Movie movie = new Movie(title, completePosterPath,rating,overView);
+//                    movieList.add(movie);
+//                }
+//
+//                // Sau khi đã thêm dữ liệu vào danh sách, cập nhật RecyclerView
+//                recyclerView.getAdapter().notifyDataSetChanged();
+//
+//            } catch (JSONException e) {
+//                Log.e("FetchMovieDataTask", "Error parsing JSON", e);
+//            }
+//        }
+//
+//
+//    }
