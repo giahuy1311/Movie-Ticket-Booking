@@ -9,14 +9,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.midtermproject.adapter.DateAdapter;
 import com.example.midtermproject.adapter.TheaterAdapter;
-import com.example.midtermproject.adapter.TimeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +33,8 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
     private TextView movieNameText;
     private ImageView movieImageView;
     private TextView movieDescriptionText;
-    private TextView movieRatingText;
+    private TextView movieRatingText, movieDurationText, movieGenreText;
+    Button watchTrailerButton;
     private RecyclerView dateRecyclerView;
     private RecyclerView theaterRecyclerView;
     private RecyclerView timeRecyclerView;
@@ -49,6 +50,9 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
         movieImageView = findViewById(R.id.imageView);
         movieDescriptionText = findViewById(R.id.movieSypnosisTextView);
         movieRatingText = findViewById(R.id.movieRatingTextView);
+        movieDurationText = findViewById(R.id.durationTextView);
+        movieGenreText = findViewById(R.id.movieGenreTextView);
+        watchTrailerButton = findViewById(R.id.trailerBtn);
 
         Intent intent = getIntent();
         movie = new Movie();
@@ -57,11 +61,16 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
              movie.setPosterPath(intent.getStringExtra("movieImage"));
              movie.setOverview(intent.getStringExtra("movieDescription"));
              movie.setRating(intent.getStringExtra("movieRating"));
+             movie.setDuration(intent.getStringExtra("movieDuration"));
+             movie.setGenre(intent.getStringExtra("movieGenre"));
+             movie.setTrailer(intent.getStringExtra("movieTrailer"));
 
             Picasso.get().load(movie.getPoster()).into(movieImageView);
             movieNameText.setText(movie.getTitle());
             movieDescriptionText.setText(movie.getSypnosis());
             movieRatingText.setText("Rating: "+movie.getRating());
+            movieDurationText.setText(movie.getDuration());
+            movieGenreText.setText(movie.getGenre());
         }
 
         // back to previous page
@@ -74,7 +83,15 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
         });
 
         fabButton = (FloatingActionButton) findViewById(R.id.fabButton);
-
+        watchTrailerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), TrailerActivity.class);
+                Log.d("MoviePage", "onClick: " + movie.getTrailer());
+                intent.putExtra("movieTrailer", movie.getTrailer());
+                startActivity(intent);
+            }
+        });
         loadShowtimeData();
 
     }
@@ -90,6 +107,7 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
                 // Iterate through showtimes and display them
                 for (DataSnapshot showtimeSnapshot : dataSnapshot.getChildren()) {
                     Showtime showtime = showtimeSnapshot.getValue(Showtime.class);
+                    showtime.setShowtimeId(showtimeSnapshot.getKey());
                     // Display or process the showtime information
                     showtimeList.add(showtime);
                     Log.d("Showtime", "onDataChange: " + showtime.getTheaterName());
@@ -127,6 +145,7 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
         dateAdapter.setOnDateClickListener(new DateAdapter.OnDateClickListener() {
             @Override
             public void onDateClick(String selectedDate) {
+
                 Log.d("MoviePage", "onDateClick: " + selectedDate);
                 setupTheaterAdapter(selectedDate);
             }

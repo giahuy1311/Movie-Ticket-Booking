@@ -1,10 +1,8 @@
 package com.example.midtermproject.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,11 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midtermproject.R;
 import com.example.midtermproject.Showtime;
-import com.example.midtermproject.Theater;
 import com.example.midtermproject.TimeSlot;
 
-import java.sql.Time;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder>{
@@ -27,7 +23,7 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
     private List<Showtime> showtimeList;
     private int showListIndex;
 
-    public TimeAdapter(List<TimeSlot> timeSlotList,TheaterAdapter theaterAdapter, List<Showtime> showtimeList,int showListIndex) {
+    public TimeAdapter(List<TimeSlot> timeSlotList, TheaterAdapter theaterAdapter, List<Showtime> showtimeList, int showListIndex) {
         this.timeSlotList = timeSlotList;
         this.theaterAdapter = theaterAdapter;
         this.showtimeList = showtimeList;
@@ -71,7 +67,7 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
                     timeSlot.setUnSelected();
                 }
                 timeSlotList.get(position).setSelected();
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.blue));
+                holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.time_item_selected));
                 notifyDataSetChanged();
                 if (onTimeClickListener != null) {
                     onTimeClickListener.onTimeClick(timeSlot, showListIndex);

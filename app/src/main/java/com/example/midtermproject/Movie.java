@@ -5,15 +5,21 @@ public class Movie implements java.io.Serializable{
     public String poster;
     public String rating;
     public String sypnosis;
+    private String trailer;
+    private String genre;
+    private String duration;
 
     public Movie() {
     }
 
-    public Movie(String title, String posterPath, String rating, String overview) {
+    public Movie(String title, String posterPath, String rating, String overview, String trailer, String genre, String duration) {
         this.title = title;
         this.poster = posterPath;
         this.rating = "Rating: " + rating ;
         this.sypnosis = overview;
+        this.trailer = trailer;
+        this.genre = genre;
+        this.duration = duration;
     }
 
     // Các phương thức getter
@@ -29,6 +35,15 @@ public class Movie implements java.io.Serializable{
     public String getSypnosis() {
         return sypnosis;
     }
+    public String getTrailer() {
+        return trailer;
+    }
+    public String getGenre() {
+        return genre;
+    }
+    public String getDuration() {
+        return duration;
+    }
 
     // Các phương thức setter
     public void setTitle(String title) {
@@ -43,13 +58,13 @@ public class Movie implements java.io.Serializable{
     public void setOverview(String overview) {
         this.sypnosis = overview;
     }
-//    public void setPoster(String poster) {
-//        this.poster = poster;
-//    }
-//    public void setRating(String rating) {
-//        this.rating = "Rating: " + rating;
-//    }
-//    public void setSypnosis(String sypnosis) {
-//        this.sypnosis = sypnosis;
-//    }
+    public void setTrailer(String trailer) {
+        this.trailer = trailer;
+    }
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
 }

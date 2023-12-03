@@ -1,19 +1,17 @@
 package com.example.midtermproject;
 
-import java.sql.Time;
-
 public class Showtime implements java.io.Serializable{ // lịch chiếu
+    private String showtimeId;
     private String theaterName;
     private String movieName;
     private String time;
-
     public String date; // ngày chiếu
     public String day; // thứ trong tuần
 
-
     public Showtime() {
     }
-    public Showtime(String theaterName, String movieName, String time, String date, String dayOfWeek) {
+    public Showtime(String showtimeId,String theaterName, String movieName, String time, String date, String dayOfWeek) {
+        this.showtimeId = showtimeId;
         this.theaterName = theaterName;
         this.movieName = movieName;
         this.time = time;
@@ -41,6 +39,12 @@ public class Showtime implements java.io.Serializable{ // lịch chiếu
     }
     public TimeSlot getTimeSlot() {
         return new TimeSlot(time);
+    }
+    public String setShowtimeId(String showtimeId) {
+        return this.showtimeId = showtimeId;
+    }
+    public String getShowtimeId() {
+        return showtimeId;
     }
 
 }

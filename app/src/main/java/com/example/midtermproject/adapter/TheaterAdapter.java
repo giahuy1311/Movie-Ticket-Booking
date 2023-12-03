@@ -1,11 +1,9 @@
 package com.example.midtermproject.adapter;
 
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +15,7 @@ import com.example.midtermproject.Showtime;
 import com.example.midtermproject.Theater;
 import com.example.midtermproject.TimeSlot;
 
-import java.sql.Time;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,28 +108,7 @@ public class TheaterAdapter extends RecyclerView.Adapter<TheaterAdapter.TheaterV
 
 }
 
-//            timeAdapter.setOnTimeClickListener(new TimeAdapter.OnTimeClickListener() {
-//                @Override
-//                public void onTimeClick(String time) {
-//
-//                    Log.d("TheaterAdapter", "onTimeClick: " + time);
-//                    // Update isSelected state for all items
-//
-////                    Intent intent = new Intent(itemView.getContext(), SeatBookingActivity.class);
-////                    intent.putExtra("theaterName", theater.getName());
-////                    Showtime showtime = theater.getShowtime();
-////                    Movie movie = theater.getMovie();
-////                    intent.putExtra("movieName", showtime.getMovieName());
-////                    intent.putExtra("date", showtime.getDate());
-////                    intent.putExtra("dayOfWeek", showtime.getDay());
-////                    intent.putExtra("time", time);
-////                    intent.putExtra("poster", movie.getPoster());
-////
-////                    // start to SeatBooking activity
-////                    itemView.getContext().startActivity(intent);
-//
-//                }
-//            });
+
 
 
 

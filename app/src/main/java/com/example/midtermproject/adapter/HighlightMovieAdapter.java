@@ -1,11 +1,13 @@
 package com.example.midtermproject.adapter;
 
+import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.midtermproject.Movie;
+import com.example.midtermproject.MoviePage;
 import com.example.midtermproject.R;
 import com.squareup.picasso.Picasso;
 
@@ -34,11 +36,27 @@ public class HighlightMovieAdapter extends RecyclerView.Adapter<HighlightMovieAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Movie movie = movieList.get(position);
         Picasso.get().load(movie.getPoster()).into(holder.imageView);
-        // Hiển thị thông tin bộ phim trong ViewHolder
-        // Ví dụ: holder.titleTextView.setText(movie.getTitle());
 
-        // Sử dụng thư viện Picasso/Glide để tải và hiển thị ảnh poster từ URL
-        // Picasso.get().load(movie.getPosterPath()).into(holder.posterImageView);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get the clicked item's data if needed
+                Movie clickedItem = movieList.get(position);
+
+                // Start the new activity
+                Intent intent = new Intent(view.getContext(), MoviePage.class);
+                // Pass any data to the new activity if needed
+                intent.putExtra("movieTitle", clickedItem.getTitle());
+                intent.putExtra("movieDescription", clickedItem.getSypnosis());
+                intent.putExtra("movieImage", clickedItem.getPoster());
+                intent.putExtra("movieRating", clickedItem.getRating());
+                intent.putExtra("movieDuration", clickedItem.getDuration());
+                intent.putExtra("movieGenre", clickedItem.getGenre());
+                intent.putExtra("movieTrailer", clickedItem.getTrailer());
+
+                view.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -48,16 +66,10 @@ public class HighlightMovieAdapter extends RecyclerView.Adapter<HighlightMovieAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
-        // Khai báo các View trong ViewHolder
-        // Ví dụ: public TextView titleTextView;
-        //      public ImageView posterImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.posterImageView);
-            // Ánh xạ các View từ itemView
-            // Ví dụ: titleTextView = itemView.findViewById(R.id.titleTextView);
-            //      posterImageView = itemView.findViewById(R.id.posterImageView);
         }
     }
 }

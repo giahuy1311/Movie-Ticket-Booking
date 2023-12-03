@@ -8,6 +8,8 @@ import java.util.List;
 
 public class Theater {
     public String name;
+    public String seat;
+    public String seatPrice;
 
     public Theater() {
     }
@@ -18,5 +20,8 @@ public class Theater {
 
     public String getName() {
         return name;
+    }
+    public String getSeatList() {
+        return seat;
     }
 }

@@ -64,6 +64,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder
                 @Override
                 public void onClick(View view) {
                     if (onDateClickListener != null) {
+
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             String selectedDate = dayOfWeekList.get(position);

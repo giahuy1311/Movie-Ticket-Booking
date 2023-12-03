@@ -37,15 +37,7 @@
                 android:textSize="15sp"
                 />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/user_profile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/baseline_account_circle_24"
-            android:layout_weight="0.5"
-            android:layout_margin="5dp"
-            android:layout_gravity="center">
-        </ImageView>
+
     </LinearLayout>
 
     <androidx.appcompat.widget.SearchView

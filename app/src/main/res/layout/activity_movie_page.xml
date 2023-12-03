@@ -70,19 +70,64 @@
 
             </TextView>
 
-            <TextView
-                android:id="@+id/movieRatingTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="135dp"
-                android:drawableLeft="@drawable/baseline_star_border_24"
-                android:text="Rating : 8.5"
-                android:textSize="20sp"
-                android:textStyle="italic"></TextView>
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:weightSum="4">
+                <TextView
+                    android:id="@+id/movieRatingTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:drawableLeft="@drawable/baseline_star_border_24"
+                    android:text="8.5"
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:layout_weight="1"
+                    android:gravity="center">
+                </TextView>
+                <TextView
+                    android:id="@+id/movieGenreTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:text="Genre: "
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/baseline_movie_filter_24">
+                </TextView>
+                <TextView
+                    android:id="@+id/durationTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:text="1h45"
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:gravity="center"
+                    android:drawableLeft="@drawable/baseline_access_time_24">
+                </TextView>
+                <Button
+                    android:id="@+id/trailerBtn"
+                    style="@style/btnStyle2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:text="Trailer"
+                    android:textSize="13sp"
+                    >
+                </Button>
+            </LinearLayout>
 
             <View
                 style="@style/Divider"
-                android:layout_margin="30dp">
+                android:layout_margin="10dp">
             </View>
 
 
@@ -111,7 +156,7 @@
 
             <View
                 style="@style/Divider"
-                android:layout_margin="30dp">
+                android:layout_margin="10dp">
             </View>
 
             <androidx.recyclerview.widget.RecyclerView
