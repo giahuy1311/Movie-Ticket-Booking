@@ -85,14 +85,14 @@
                     android:text="8.5"
                     android:textSize="13sp"
                     android:textStyle="italic"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center">
                 </TextView>
                 <TextView
                     android:id="@+id/movieGenreTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:layout_marginLeft="10dp"
                     android:text="Genre: "
                     android:textSize="13sp"
@@ -104,7 +104,7 @@
                     android:id="@+id/durationTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:layout_marginLeft="10dp"
                     android:text="1h45"
                     android:textSize="13sp"

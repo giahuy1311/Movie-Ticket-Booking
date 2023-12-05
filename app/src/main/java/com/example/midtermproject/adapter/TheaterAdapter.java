@@ -1,5 +1,7 @@
 package com.example.midtermproject.adapter;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +64,6 @@ public class TheaterAdapter extends RecyclerView.Adapter<TheaterAdapter.TheaterV
             Theater theater1 = showtime1.getTheater();
             if (theater1.name.equals(theaterName)) {
                 String timeList = showtime1.getTime();
-                // timelist from database is a string with format "time1,time2,time3,..."
                 String[] timeArray = timeList.split(" ");
                 for (String time : timeArray) {
                     TimeSlot timeSlot = new TimeSlot(time);
@@ -76,13 +77,26 @@ public class TheaterAdapter extends RecyclerView.Adapter<TheaterAdapter.TheaterV
         timeAdapter.setOnTimeClickListener(this);
         holder.timeRecyclerView.setAdapter(timeAdapter);
 
+        holder.showMapTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("TheaterAdapter", "onClick: " + theaterName);
+                String location = theaterName;
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + location);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                if (mapIntent.resolveActivity(v.getContext().getPackageManager()) != null) {
+                    v.getContext().startActivity(mapIntent);
+                }
+            }
+        });
     }
     @Override
     public void onTimeClick(TimeSlot timeSlot, int showListIndex) {
-        Log.d("TheaterAdapter", "onTimeClick: " + timeSlot.getTime() + " " + showListIndex);
         if (onTimeClickListener != null) {
             onTimeClickListener.onTimeClick(timeSlot, showListIndex);
         }
+        Log.d("TheaterAdapter", "onTimeClick: " + timeSlot.getTime() + " " + showListIndex);
+
     }
 
     @Override
@@ -93,6 +107,7 @@ public class TheaterAdapter extends RecyclerView.Adapter<TheaterAdapter.TheaterV
     // setup view holder
     public class TheaterViewHolder extends RecyclerView.ViewHolder {
         private TextView theaterNameTextView;
+        private TextView showMapTextView;
         private RecyclerView timeRecyclerView;
 
 
@@ -100,6 +115,7 @@ public class TheaterAdapter extends RecyclerView.Adapter<TheaterAdapter.TheaterV
             super(itemView);
             theaterNameTextView = itemView.findViewById(R.id.theaterNameTextView);
             timeRecyclerView = itemView.findViewById(R.id.recyclerView_time);
+            showMapTextView = itemView.findViewById(R.id.showMap);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
             timeRecyclerView.setLayoutManager(layoutManager);

@@ -47,4 +47,19 @@ public class Showtime implements java.io.Serializable{ // lịch chiếu
         return showtimeId;
     }
 
+    // setter
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public void setDayOfWeek(String dayOfWeek) {
+        this.day = dayOfWeek;
+    }
+    public void setTheaterName(String theaterName) {
+        this.theaterName = theaterName;
+    }
+    public void setMovieName(String movieName) {
+        this.movieName = movieName;
+    }
+
+
 }

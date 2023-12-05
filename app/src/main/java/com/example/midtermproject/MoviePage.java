@@ -68,7 +68,7 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
             Picasso.get().load(movie.getPoster()).into(movieImageView);
             movieNameText.setText(movie.getTitle());
             movieDescriptionText.setText(movie.getSypnosis());
-            movieRatingText.setText("Rating: "+movie.getRating());
+            movieRatingText.setText(movie.getRating());
             movieDurationText.setText(movie.getDuration());
             movieGenreText.setText(movie.getGenre());
         }
@@ -184,6 +184,7 @@ public class MoviePage extends AppCompatActivity implements TheaterAdapter.OnTim
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), SeatBookingActivity.class);
+                intent.putExtra("activity", "MoviePage");
                 intent.putExtra("theaterName", showtimeSelected.getTheaterName());
                 intent.putExtra("movie", (Serializable) movie);
                 intent.putExtra("showtime", (Serializable) showtimeSelected);

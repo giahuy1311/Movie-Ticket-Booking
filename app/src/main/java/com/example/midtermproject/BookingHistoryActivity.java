@@ -39,7 +39,6 @@ public class BookingHistoryActivity extends AppCompatActivity {
         bookingList = gson.fromJson(serializedBookingList, bookingListType);
 
 
-
         // setup recycler view
         // if the list is empty, show a message
         if (bookingList.isEmpty()) {
@@ -55,7 +54,7 @@ public class BookingHistoryActivity extends AppCompatActivity {
 
         btnBack = findViewById(R.id.backBtn);
         btnBack.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
 
     }

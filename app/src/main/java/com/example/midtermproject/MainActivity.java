@@ -90,26 +90,40 @@ public class MainActivity extends AppCompatActivity {
                         // Go to booking history
                         List<Booking> bookingList = new ArrayList<>();
                         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("booking");
-                        connectedRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                        Booking booking = dataSnapshot.getValue(Booking.class);
-                                        bookingList.add(booking);
-                                    }
-                                    Intent intent = new Intent(MainActivity.this, BookingHistoryActivity.class);
-                                    String json = new Gson().toJson(bookingList);
-                                    intent.putExtra("bookingList", json);
-                                    startActivity(intent);
-                                } else {
+                        connectedRef.get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("FetchBookingDataTask", "Booking list size: " + task.getResult().getChildrenCount());
+                                for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                                    Booking booking = dataSnapshot.getValue(Booking.class);
+                                    Log.d("FetchBookingDataTask", "Booking paid: " + booking.isPaid()+"");
+                                    bookingList.add(booking);
                                 }
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                Log.d("FirebaseConnection", "Listener was cancelled");
+                                Intent intent = new Intent(MainActivity.this, BookingHistoryActivity.class);
+                                String json = new Gson().toJson(bookingList);
+                                intent.putExtra("bookingList", json);
+                                startActivity(intent);
                             }
                         });
+//                        connectedRef.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot snapshot) {
+//                                if (snapshot.exists()) {
+//                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                                        Booking booking = dataSnapshot.getValue(Booking.class);
+//                                        bookingList.add(booking);
+//                                    }
+//                                    Intent intent = new Intent(MainActivity.this, BookingHistoryActivity.class);
+//                                    String json = new Gson().toJson(bookingList);
+//                                    intent.putExtra("bookingList", json);
+//                                    startActivity(intent);
+//                                } else {
+//                                }
+//                            }
+//                            @Override
+//                            public void onCancelled(DatabaseError error) {
+//                                Log.d("FirebaseConnection", "Listener was cancelled");
+//                            }
+//                        });
 
                     }
                     return false;

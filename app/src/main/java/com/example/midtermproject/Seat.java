@@ -1,6 +1,6 @@
 package com.example.midtermproject;
 
-public class Seat {
+public class Seat implements java.io.Serializable{
     private String seatId;
     private boolean isBooked;
     private boolean isSelected;
@@ -33,6 +33,9 @@ public class Seat {
     }
     public void setIsBooked() {
         this.isBooked = true;
+    }
+    public void setUnBooked() {
+        this.isBooked = false;
     }
     public void setUnSelected() {
         this.isSelected = false;

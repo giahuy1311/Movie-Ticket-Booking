@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +41,7 @@ public class SeatBookingActivity extends AppCompatActivity {
     private Movie movie;
     private Showtime showtime;
     private String theaterName;
-    private String time;
+    private String time, activity;
     private TextView movieNameTextView;
     private TextView theaterNameTextView;
     private TextView timeTextView;
@@ -68,11 +69,29 @@ public class SeatBookingActivity extends AppCompatActivity {
         numberOfTicketsTextView = findViewById(R.id.numTicketTextView);
         fabButton = findViewById(R.id.fabButton);
         tableLayout = findViewById(R.id.seatTable);
+        bookedSeatList = new ArrayList<>();
+        // check if previous activity is MoviePage or BookingHistory
+        activity = getIntent().getStringExtra("activity");
+        Log.d("SeatBooking", "onCreate: " + activity);
+        if (activity.equals("MoviePage")) {
+            movie = (Movie) getIntent().getSerializableExtra("movie");
+            showtime = (Showtime) getIntent().getSerializableExtra("showtime");
+            theaterName = getIntent().getStringExtra("theaterName");
+            time = getIntent().getStringExtra("time");
+        }
+        else {
 
-        movie = (Movie) getIntent().getSerializableExtra("movie");
-        showtime = (Showtime) getIntent().getSerializableExtra("showtime");
-        theaterName = getIntent().getStringExtra("theaterName");
-        time = getIntent().getStringExtra("time");
+            booking = (Booking) getIntent().getSerializableExtra("booking");
+            movie = booking.getMovie();
+            theaterName = booking.getTheaterName();
+            time = booking.getTime();
+            Log.d("SeatBooking", "onCreate: " + time + " " + theaterName + " " + movie.getTitle());
+            showtime = new Showtime();
+            showtime.setDate(booking.getDate());
+            showtime.setShowtimeId(booking.getShowtimeId());
+            bookedSeatList = booking.getSeatList();
+            booking.reverseSeatList();
+        }
 
         movieNameTextView.setText(movie.getTitle());
         theaterNameTextView.setText(theaterName);
@@ -112,7 +131,6 @@ public class SeatBookingActivity extends AppCompatActivity {
                         for (String seatID : seatIDs) {
                             seatList.add(new Seat(seatID, false, Double.parseDouble(seatPrice)));
                         }
-                        Log.d("SeatBooking", "onDataChange: " + seatList.size());
                         // Create table seats
                         updateSeatList(seatList);
                         break;
@@ -129,8 +147,6 @@ public class SeatBookingActivity extends AppCompatActivity {
     }
 
     private void createSeatTable(List<Seat> seatList) {
-
-        bookedSeatList = new ArrayList<>();
 
         int col = 8;
 
@@ -158,7 +174,15 @@ public class SeatBookingActivity extends AppCompatActivity {
                     seatButton.setLayoutParams(params);
 
                     Log.d("SeatBooking", "createSeatTable: " + seat.isBooked());
-
+                    if (activity.equals("bookingHistory")) {
+                        for (Seat bookedSeat : booking.getSeatList()) {
+                            if (bookedSeat.getSeatId().equals(seat.getSeatId())) {
+                                Log.d("SeatBooking", "setupBackground: " + seat.getSeatId());
+                                seat.setIsSelected();
+                            }
+                        }
+                    }
+                    updateBookingInfo();
                     setupBackground(seat, seatButton);
                     seatButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -168,17 +192,18 @@ public class SeatBookingActivity extends AppCompatActivity {
                                 Toast.makeText(SeatBookingActivity.this, "This seat is already booked!", Toast.LENGTH_SHORT).show();
                             }
                             else if (seat.isSelected()) {
+                                Log.d("SeatBooking", "onClick: " + seat.getSeatId());
                                 seat.setUnSelected();
-                                bookedSeatList.remove(seat);
-                                updateBookingInfo(seat, seatButton);
+                                bookedSeatList.removeIf(seat1 -> seat1.getSeatId().equals(seat.getSeatId()));
+                                Log.d("SeatBooking", "onClick: " + bookedSeatList.size());
+                                updateBookingInfo();
                                 // return back to original color
                                 seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_avail));
                             }
                             else {
-                                Log.d("SeatBooking", "onClick: " + seat.getSeatId());
                                 seat.setIsSelected();
                                 bookedSeatList.add(seat);
-                                updateBookingInfo(seat, seatButton);
+                                updateBookingInfo();
                                 seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_selected));
                             }
                         }
@@ -191,14 +216,15 @@ public class SeatBookingActivity extends AppCompatActivity {
 
     private void setupBackground(Seat seat, Button seatButton) {
         if (seat.isBooked()) {
-            Log.d("SeatBooking", "setUpBackground: " + seat.getSeatId());
-            seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_booked));
+                seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_booked));
+
         }
         else if (seat.isSelected()) {
             seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_selected));
         }
         else {
             seatButton.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.seat_avail));
+
         }
     }
 
@@ -228,7 +254,8 @@ public class SeatBookingActivity extends AppCompatActivity {
             }
         });
     }
-    private void updateBookingInfo(Seat seat, Button seatButton) {
+
+    private void updateBookingInfo() {
         double totalPrice = 0;
         totalPrice = calculateTotalPrice();
 
@@ -245,7 +272,9 @@ public class SeatBookingActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss a", Locale.getDefault());
                 String timeBooked = sdf.format(currentTime);
 
-                booking = new Booking(bookedSeatList,movie,theaterName,time,showtime.getDate(), finalTotalPrice,timeBooked);
+                if (!activity.equals("bookingHistory")) {
+                    booking = new Booking(bookedSeatList, movie, theaterName, time, showtime.getDate(), finalTotalPrice, timeBooked, showtime.getShowtimeId());
+                }
                 // Handle fab button click);
                 setUpSeatBooking(booking);
             }
@@ -263,12 +292,14 @@ public class SeatBookingActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Perform the booking action
 
-                for (Seat seat : bookedSeatList) {
-                    seat.setIsBooked();
+                for (Seat seat : seatList) {
+                    if (seat.isSelected()) {
+                        seat.setIsBooked();
+                    }
                 }
                 performBookingAction(booking);
                 updateTableBackground();
-                showDialogPurchase();
+                showDialogPurchase(booking);
             }
         });
 
@@ -285,7 +316,7 @@ public class SeatBookingActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void showDialogPurchase() {
+    private void showDialogPurchase(Booking booking) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Purchase information");
         builder.setMessage("Your total is $" + calculateTotalPrice() + ". Do you want to pay now?");
@@ -295,9 +326,14 @@ public class SeatBookingActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Perform the booking action
-                Toast.makeText(SeatBookingActivity.this, "Thank you for your purchase!", Toast.LENGTH_SHORT).show();
+                booking.setPaid();
+                booking.updatePurchase();
+                Toast.makeText(SeatBookingActivity.this, "Thank you! Wish you have a great time!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 // restart activity
+                Intent i= new Intent(SeatBookingActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 finish();
             }
         });
@@ -306,7 +342,9 @@ public class SeatBookingActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Perform the booking action
                 dialog.dismiss();
-                // restart activity
+                Intent i= new Intent(SeatBookingActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 finish();
             }
         });
@@ -344,14 +382,14 @@ public class SeatBookingActivity extends AppCompatActivity {
     private void performBookingAction(Booking booking) {
         Toast.makeText(this, "Seats booked successfully!", Toast.LENGTH_SHORT).show();
 
+        // Update seatList in firebase
         String newbookedSeatListString = "";
-        for (Seat bookedSeat : seatList) {
-            if (bookedSeat.isBooked()) {
-                newbookedSeatListString += bookedSeat.getSeatId() + " ";
+        for (Seat seat : seatList) {
+            if (seat.isBooked()) {
+                newbookedSeatListString += seat.getSeatId() + " ";
             }
         }
         Log.d("SeatBooking", "performBookingAction: " + newbookedSeatListString);
-
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("showtime");
         reference.child(movie.getTitle())
                 .child(showtime.getShowtimeId())
@@ -374,10 +412,10 @@ public class SeatBookingActivity extends AppCompatActivity {
                         Log.e("FirebaseUpdate", "Error updating value", e);
                     }
                 });
-        updateBookingToFirebase(newbookedSeatListString);
+        updateBookingToFirebase(booking);
     }
 
-    private void updateBookingToFirebase(String newbookedSeatListString) {
+    private void updateBookingToFirebase(Booking booking) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // Name, email address, and profile photo Url
@@ -390,19 +428,27 @@ public class SeatBookingActivity extends AppCompatActivity {
             String uid = user.getUid();
         }
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("booking");
+        if (activity.equals("bookingHistory")) {
+            booking.setSeatList(bookedSeatList);
+            booking.setTimeBooked(booking.getTimeBooked());
+            booking.setTotalPrice(calculateTotalPrice());
 
-        reference.push().setValue(booking, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError == null) {
-                    Log.d("FirebaseUpdate", "Booking added successfully");
-                } else {
-                    Log.e("FirebaseUpdate", "Error adding booking", databaseError.toException());
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("booking");
+            reference.child(booking.getBookingId()).setValue(booking);
+        }
+        else {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("booking");
+
+            reference.child(booking.getBookingId()).setValue(booking, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        Log.d("FirebaseUpdate", "Booking added successfully");
+                    } else {
+                        Log.e("FirebaseUpdate", "Error adding booking", databaseError.toException());
+                    }
                 }
-            }
-        });
+            });
+        }
     }
-
-
 }
