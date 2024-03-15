@@ -1,4 +1,4 @@
-package com.example.midtermproject;
+package com.example.midtermproject.data;
 
 import android.util.Log;
 

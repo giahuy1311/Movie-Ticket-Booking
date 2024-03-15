@@ -1,4 +1,4 @@
-package com.example.midtermproject;
+package com.example.midtermproject.data;
 
 public class Showtime implements java.io.Serializable{ // lịch chiếu
     private String showtimeId;

@@ -1,4 +1,4 @@
-package com.example.midtermproject;
+package com.example.midtermproject.data;
 
 public class TimeSlot {
     private String time;

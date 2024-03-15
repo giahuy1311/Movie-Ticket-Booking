@@ -1,4 +1,4 @@
-package com.example.midtermproject;
+package com.example.midtermproject.data;
 
 public class Movie implements java.io.Serializable{
     public String title;
